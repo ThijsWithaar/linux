@@ -172,6 +172,31 @@ else
         KBUILD_RUSTFLAGS += -Ctarget-cpu=x86-64 -Ztune-cpu=generic
 endif
 
+        # FIXME - should be integrated in Makefile.cpu (Makefile_32.cpu)
+        cflags-$(CONFIG_MK8)		+= -march=k8
+        cflags-$(CONFIG_MZEN3) 		+= -march=znver3
+        cflags-$(CONFIG_MZEN4) 		+= -march=znver4
+        cflags-$(CONFIG_MPSC)		+= -march=nocona
+        cflags-$(CONFIG_MCORE2)		+= -march=core2
+        cflags-$(CONFIG_MATOM)		+= -march=atom
+        cflags-$(CONFIG_MNATIVE)	+= -march=native
+        cflags-$(CONFIG_GENERIC_CPU)	+= -mtune=generic
+        cflags-$(CONFIG_GENERIC_CPU3)	+= -march=x86-64-v3
+        cflags-$(CONFIG_GENERIC_CPU4)	+= -march=x86-64-v4
+        KBUILD_CFLAGS += $(cflags-y)
+
+        rustflags-$(CONFIG_MK8)		+= -Ctarget-cpu=k8
+        rustflags-$(CONFIG_MZEN3) 	+= -Ctarget-cpu=znver3
+        rustflags-$(CONFIG_MZEN4) 	+= -Ctarget-cpu=znver4
+        rustflags-$(CONFIG_MPSC)	+= -Ctarget-cpu=nocona
+        rustflags-$(CONFIG_MCORE2)	+= -Ctarget-cpu=core2
+        rustflags-$(CONFIG_MATOM)	+= -Ctarget-cpu=atom
+        rustflags-$(CONFIG_MNATIVE)	+= -Ctarget-cpu=native
+        rustflags-$(CONFIG_GENERIC_CPU)	+= -Ztune-cpu=generic
+        rustflags-$(CONFIG_GENERIC_CPU3)+= -Ctarget-cpu=x86-64-v3
+        rustflags-$(CONFIG_GENERIC_CPU4)+= -Ctarget-cpu=x86-64-v4
+        KBUILD_RUSTFLAGS += $(rustflags-y)
+
         KBUILD_CFLAGS += -mno-red-zone
         KBUILD_CFLAGS += -mcmodel=kernel
         KBUILD_RUSTFLAGS += -Cno-redzone=y
