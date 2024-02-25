@@ -31,6 +31,12 @@
 #define MODULE_PROC_FAMILY "K6 "
 #elif defined CONFIG_MK7
 #define MODULE_PROC_FAMILY "K7 "
+#elif defined CONFIG_MK8
+#define MODULE_PROC_FAMILY "K8 "
+#elif defined CONFIG_MZEN3
+#define MODULE_PROC_FAMILY "ZEN3 "
+#elif defined CONFIG_MZEN4
+#define MODULE_PROC_FAMILY "ZEN4 "
 #elif defined CONFIG_MELAN
 #define MODULE_PROC_FAMILY "ELAN "
 #elif defined CONFIG_MCRUSOE
@@ -51,6 +57,12 @@
 #define MODULE_PROC_FAMILY "GEODEGX1 "
 #elif defined CONFIG_MGEODE_LX
 #define MODULE_PROC_FAMILY "GEODE "
+#elif defined CONFIG_MNATIVE
+#define MODULE_PROC_FAMILY "NATIVE "
+#elif defined CONFIG_GENERIC_CPU3
+#define MODULE_PROC_FAMILY "X64_3 "
+#elif defined CONFIG_GENERIC_CPU4
+#define MODULE_PROC_FAMILY "X64_4 "
 #else
 #error unknown processor family
 #endif
