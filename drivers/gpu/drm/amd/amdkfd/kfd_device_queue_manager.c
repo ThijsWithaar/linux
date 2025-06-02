@@ -1435,9 +1435,12 @@ static int evict_process_queues_cpsch(struct device_queue_manager *dqm,
 	struct kfd_process_device *pdd;
 	int retval = 0;
 
+	// gfx1103 APU fails to remove the queue usually after 10-50 attempts
+	if (dqm->dev->adev->flags & AMD_IS_APU)
+		goto out;
 	dqm_lock(dqm);
 	if (qpd->evicted++ > 0) /* already evicted, do nothing */
-		goto out;
+		goto out_unlock;
 
 	pdd = qpd_to_pdd(qpd);
 
@@ -1446,7 +1449,7 @@ static int evict_process_queues_cpsch(struct device_queue_manager *dqm,
 	 * Skip queue eviction on process eviction.
 	 */
 	if (!pdd->drm_priv)
-		goto out;
+		goto out_unlock;
 
 	pr_debug_ratelimited("Evicting process pid %d queues\n",
 			    pdd->process->lead_thread->pid);
@@ -1494,8 +1497,9 @@ static int evict_process_queues_cpsch(struct device_queue_manager *dqm,
 					      USE_DEFAULT_GRACE_PERIOD);
 	}
 
-out:
+out_unlock:
 	dqm_unlock(dqm);
+out:
 	return retval;
 }
 
@@ -1589,14 +1593,17 @@ static int restore_process_queues_cpsch(struct device_queue_manager *dqm,
 	uint64_t eviction_duration;
 	int retval = 0;
 
+	// gfx1103 APU fails to remove the queue usually after 10-50 attempts
+	if (dqm->dev->adev->flags & AMD_IS_APU)
+		goto out;
 	pdd = qpd_to_pdd(qpd);
 
 	dqm_lock(dqm);
 	if (WARN_ON_ONCE(!qpd->evicted)) /* already restored, do nothing */
-		goto out;
+		goto out_unlock;
 	if (qpd->evicted > 1) { /* ref count still > 0, decrement & quit */
 		qpd->evicted--;
-		goto out;
+		goto out_unlock;
 	}
 
 	/* The debugger creates processes that temporarily have not acquired
@@ -1634,7 +1641,7 @@ static int restore_process_queues_cpsch(struct device_queue_manager *dqm,
 			if (retval) {
 				dev_err(dev, "Failed to restore queue %d\n",
 					q->properties.queue_id);
-				goto out;
+				goto out_unlock;
 			}
 		}
 	}
@@ -1645,8 +1652,9 @@ static int restore_process_queues_cpsch(struct device_queue_manager *dqm,
 	atomic64_add(eviction_duration, &pdd->evict_duration_counter);
 vm_not_acquired:
 	qpd->evicted = 0;
-out:
+out_unlock:
 	dqm_unlock(dqm);
+out:
 	return retval;
 }
 
